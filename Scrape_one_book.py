@@ -13,4 +13,8 @@ if response.ok:
         a = div.find('a')
         link = a['href']
         links.append('http://books.toscrape.com/' + link)
-    print(links)
+    print(len(links))
+
+with open('urls.csv', 'w') as file:
+    for link in links:
+        file.write(link + '\n')
