@@ -1,8 +1,2 @@
-intitulé,informations
-UPC,a22124811bfa8350
-Product Type,Books
-Price (excl. tax),Â£45.17
-Price (incl. tax),Â£45.17
-Tax,Â£0.00
-Availability,In stock (19 available)
-Number of reviews,0
+Titre,Intitulé,Informations
+It's Only the Himalayas,"['UPC', 'Product Type', 'Price (excl. tax)', 'Price (incl. tax)', 'Tax', 'Availability', 'Number of reviews']","['a22124811bfa8350', 'Books', 'Â£45.17', 'Â£45.17', 'Â£0.00', 'In stock (19 available)', '0']"
