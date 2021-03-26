@@ -23,9 +23,9 @@ with open('urls.csv', 'w') as file:
 
 with open('urls.csv', 'r') as file:
 
-    for row in file:
+    for url in file:
 
-        url = row.strip()
+        url = url.strip()
         response = requests.get(url)
         if response.ok:
             soup = BeautifulSoup(response.text, 'lxml')
