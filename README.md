@@ -1,20 +1,20 @@
 # Books_to_scrap
 
-A little scrip to scrape imformations about books in the website 'http://books.toscrape.com/index.html'
+A little script to scrape information about books in the website [Books To Scrape](http://books.toscrape.com/index.html)
 
 # Installation
 
-Clone the repo then :
+Clone the repo and :
 
 ```
 cd Books-to-scrape 
 ```
-then :
+Then :
 
 ```
 pip install -r requirements.txt
 ```
-After you enter that command in the terminal :
+Then enter that command in the terminal :
 
 ```
 python3 Scrape_one_book.py  
