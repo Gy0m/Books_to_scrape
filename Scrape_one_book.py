@@ -1,5 +1,4 @@
 import requests
-import ipdb
 from bs4 import BeautifulSoup
 import csv
 
@@ -28,32 +27,35 @@ with open('urls.csv', 'r') as file:
         url = url.strip()
         response = requests.get(url)
         if response.ok:
-            soup = BeautifulSoup(response.text, 'lxml')
-            title = soup.find('div', {'class': 'product_main'}).find('h1')  # récupère les titres des livres
-            data_table = soup.find('table', {'class': 'table table-striped'})  # identifie la classe du tableau
-            data_table_ths = data_table('th')  # crée une variable avec les infos de th
-            data_table_tds = data_table.find_all('td')  # crée une variable avec les infos de td
+            def scrape():
+                soup = BeautifulSoup(response.text, 'lxml')
+                title = soup.find('div', {'class': 'product_main'}).find('h1')  # récupère les titres des livres
+                stars = soup.find('div', {'class': 'star-rating'})
+                data_table = soup.find('table', {'class': 'table table-striped'})  # identifie la classe du tableau
+                data_table_ths = data_table('th')  # crée une variable avec les infos de th
+                data_table_tds = data_table.find_all('td')  # crée une variable avec les infos de td
 
-        ths = []
 
-        for i, th in enumerate(data_table_ths):  # itère les informations du tableau th
-            ths.append(th.text)  # les ajoutes au dict ths
 
-        tds = []
+                ths = []
 
-        for i, td in enumerate(data_table_tds):
-            tds.append(td.text)
+                for i, th in enumerate(data_table_ths):  # itère les informations du tableau th
+                    ths.append(th.text)  # les ajoutes au dict ths
 
-            print('Titre: ' + title.text + ' Intitulé :' + th.text + ' Informations :' + td.text)
+                tds = []
 
-        csv_columns = ['Titre', 'Intitulé', 'Informations']
-        dict = [
-            {'Titre': title.text, 'Intitulé': ths, 'Informations': tds}
-        ]
+                for i, td in enumerate(data_table_tds):
+                    tds.append(td.text)
 
-        csv_file = "product_information.csv"
-        with open(csv_file, 'w', newline='') as csvfile:
-            writer = csv.DictWriter(csvfile, fieldnames=csv_columns)
-            writer.writeheader()
-            for data in dict:
-                writer.writerow(data)
+                    csv_columns = ['Titre', 'Intitulé', 'Informations']
+                    dict = [
+                        {'Titre': title.text, 'Intitulé': ths, 'Informations': tds}
+                    ]
+                    #print(dict)
+                    csv_file = "product_information.csv"
+                    with open(csv_file, 'w', newline='') as csvfile:
+                        writer = csv.DictWriter(csvfile, fieldnames=csv_columns)
+                        writer.writeheader()
+                        for data in dict:
+                            writer.writerow(data)
+print(scrape())
