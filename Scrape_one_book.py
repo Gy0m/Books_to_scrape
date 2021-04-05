@@ -1,14 +1,12 @@
 import requests
-# import ipdb
 from bs4 import BeautifulSoup
 import csv
 # links = []
 # for i in range(51):
 # url = 'http://books.toscrape.com/catalogue/page-' + str(i) + '.html'
-url = 'http://books.toscrape.com/catalogue/page-1.html'
+url = 'http://books.toscrape.com/index.html'
 
 response = requests.get(url)
-print(response)
 
 if response.ok:
     # print('Page: ' + str(i))
@@ -43,6 +41,8 @@ with open('urls.csv', 'r') as file:
                 table_ths = table('th')  # crée une variable avec les infos de th
                 table_tds = table.find_all('td')  # crée une variable avec les infos de td
 
+
+
                 ths = []
 
                 for i, th in enumerate(table_ths):  # itère les informations du tableau th
@@ -59,16 +59,14 @@ with open('urls.csv', 'r') as file:
                         'Titre': title.text, 'Intitulé': ths, 'Informations': tds, 'Stars': stars, 'Category': category, 'Image': image_url
                     }
                 ]
-
+                #print(dict)
                 csv_file = "product_information.csv"
                 with open(csv_file, 'w', newline='') as csvfile:
                     writer = csv.DictWriter(csvfile, fieldnames=csv_columns)
                     writer.writeheader()
                     for data in dict:
                         writer.writerow(data)
-                        print(data)
-                        # writer.writerow(get_book_info(book_url))
-
+print(scrape())
 # for category in categories:
 #     with open('product_information.csv', 'r') as books:  #ouvrir le fichier csv
 # for books in get_books(url_books):
