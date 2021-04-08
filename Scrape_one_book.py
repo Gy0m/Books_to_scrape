@@ -36,30 +36,37 @@ with open('urls.csv', 'r') as file:
                 stars = soup.get('p', {'class': 'star-rating'}).get('class')
                 category = soup.find('ul', {'class': 'breadcrumb'}).find('a')
                 image_url = soup.find('div', {'class': 'item'}).find('img')
-                # def get_book_info(book_url):
+                product_description = soup.find('div', {'id': 'product_description'}).find_next('p')
                 table = soup.find('table', {'class': 'table table-striped'})  # identifie la classe du tableau
                 table_ths = table('th')  # crée une variable avec les infos de th
                 table_tds = table.find_all('td')  # crée une variable avec les infos de td
+                print(table_ths)
 
-
+                def book_info(get_info):
+                    return {
+                        'universal_ product_code (upc)': '[0], table_ths'
+                        ''
+                    }
 
                 ths = []
 
                 for i, th in enumerate(table_ths):  # itère les informations du tableau th
                     ths.append(th.text)  # les ajoutes au dict ths
 
+
                 tds = []
 
                 for i, td in enumerate(table_tds):
                     tds.append(td.text)
 
-                csv_columns = ['Titre', 'Intitulé', 'Informations', 'Stars', 'Category', 'Image']
+                csv_columns = ['Titre', 'Intitulé', 'Informations', 'Stars', 'Category', 'Image', 'Product_description']
                 dict = [
                     {
-                        'Titre': title.text, 'Intitulé': ths, 'Informations': tds, 'Stars': stars, 'Category': category, 'Image': image_url
+                        'Titre': title.text, 'Intitulé': ths, 'Informations': tds, 'Stars': stars, 'Category': category,
+                        'Image': image_url, 'Product_description': product_description.text
                     }
                 ]
-                #print(dict)
+                # print(dict)
                 csv_file = "product_information.csv"
                 with open(csv_file, 'w', newline='') as csvfile:
                     writer = csv.DictWriter(csvfile, fieldnames=csv_columns)
@@ -70,4 +77,4 @@ print(scrape())
 # for category in categories:
 #     with open('product_information.csv', 'r') as books:  #ouvrir le fichier csv
 # for books in get_books(url_books):
-# #ecrire dans le csv
+#  #ecrire dans le csv
