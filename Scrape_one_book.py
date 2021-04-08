@@ -33,18 +33,17 @@ with open('urls.csv', 'r') as file:
             def scrape():
                 soup = BeautifulSoup(response.text, 'lxml')
                 title = soup.find('div', {'class': 'product_main'}).find('h1')  # récupère les titres des livres
-                stars = soup.get('p', {'class': 'star-rating'}).get('class')
-                category = soup.find('ul', {'class': 'breadcrumb'}).find('a')
+                stars = soup.find('p', {'class': 'star-rating'}).get('class')
+                category = soup.find('ul', {'class': 'breadcrumb'}).find_all_next('a', limit=3)
                 image_url = soup.find('div', {'class': 'item'}).find('img')
                 product_description = soup.find('div', {'id': 'product_description'}).find_next('p')
                 table = soup.find('table', {'class': 'table table-striped'})  # identifie la classe du tableau
                 table_ths = table('th')  # crée une variable avec les infos de th
                 table_tds = table.find_all('td')  # crée une variable avec les infos de td
-                print(table_ths)
 
                 def book_info(get_info):
                     return {
-                        'universal_ product_code (upc)': '[0], table_ths'
+                        'universal_product_code (upc)': '[0], table_tds'
                         ''
                     }
 
@@ -52,7 +51,6 @@ with open('urls.csv', 'r') as file:
 
                 for i, th in enumerate(table_ths):  # itère les informations du tableau th
                     ths.append(th.text)  # les ajoutes au dict ths
-
 
                 tds = []
 
@@ -73,6 +71,7 @@ with open('urls.csv', 'r') as file:
                     writer.writeheader()
                     for data in dict:
                         writer.writerow(data)
+                print(table)
 print(scrape())
 # for category in categories:
 #     with open('product_information.csv', 'r') as books:  #ouvrir le fichier csv
