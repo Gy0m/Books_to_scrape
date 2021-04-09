@@ -35,7 +35,7 @@ with open('urls.csv', 'r') as file:
                 title = soup.find('div', {'class': 'product_main'}).find('h1')  # récupère les titres des livres
                 stars = soup.find('p', {'class': 'star-rating'}).get('class')
                 category = soup.find('ul', {'class': 'breadcrumb'}).find_all_next('a', limit=3)
-                image_url = soup.find('div', {'class': 'item'}).find('img')
+                image_url = soup.find('div', {'class': 'item'}).find('img').get('src')
                 product_description = soup.find('div', {'id': 'product_description'}).find_next('p')
                 table = soup.find('table', {'class': 'table table-striped'})  # identifie la classe du tableau
                 table_ths = table('th')  # crée une variable avec les infos de th
