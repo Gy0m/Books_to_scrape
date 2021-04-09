@@ -33,8 +33,10 @@ with open('urls.csv', 'r') as file:
             def scrape():
                 soup = BeautifulSoup(response.text, 'lxml')
                 title = soup.find('div', {'class': 'product_main'}).find('h1')  # récupère les titres des livres
-                stars = soup.find('p', {'class': 'star-rating'}).get('class')
-                category = soup.find('ul', {'class': 'breadcrumb'}).find_all_next('a', limit=3)
+                star = soup.find('p', {'class': 'star-rating'}).get('class')
+                stars = star[-1]
+                categorys = soup.find('ul', {'class': 'breadcrumb'}).find_all_next('a', limit=3)
+                category = categorys[-1]
                 image_url = soup.find('div', {'class': 'item'}).find('img').get('src')
                 product_description = soup.find('div', {'id': 'product_description'}).find_next('p')
                 table = soup.find('table', {'class': 'table table-striped'})  # identifie la classe du tableau
@@ -60,7 +62,7 @@ with open('urls.csv', 'r') as file:
                 csv_columns = ['Titre', 'Intitulé', 'Informations', 'Stars', 'Category', 'Image', 'Product_description']
                 dict = [
                     {
-                        'Titre': title.text, 'Intitulé': ths, 'Informations': tds, 'Stars': stars, 'Category': category,
+                        'Titre': title.text, 'Intitulé': ths, 'Informations': tds, 'Stars': stars, 'Category': category.text,
                         'Image': image_url, 'Product_description': product_description.text
                     }
                 ]
