@@ -1,11 +1,10 @@
 import requests
 from bs4 import BeautifulSoup
 import csv
-import ipdb
 
 
-def get_books_urls(get_urls):
-    # links = []
+def get_books_urls():
+    links = []
     # for i in range(51):
     # url = 'http://books.toscrape.com/catalogue/page-' + str(i) + '.html'
     url = 'http://books.toscrape.com/index.html'
@@ -13,7 +12,7 @@ def get_books_urls(get_urls):
     response = requests.get(url)
     if response.ok:
         # print('Page: ' + str(i))
-        links = []
+        # links = []
         soup = BeautifulSoup(response.text, 'lxml')
         divs = soup.findAll('div', class_="image_container")
         for div in divs:
@@ -21,7 +20,7 @@ def get_books_urls(get_urls):
             link = a['href']
             links.append('http://books.toscrape.com/' + link)  # récupère les liens des images
     print(links)  # compte le nombre de liens
-    return get_urls
+    return links
 
 
 def to_integer(string_value):
@@ -39,9 +38,11 @@ def to_integer(string_value):
     return integer_value
 
 
-def get_book_info(get_info):
+def get_book_info(url):
+    response = requests.get(url)
+    if not response.ok:
+        return
 
-    data = list()
     soup = BeautifulSoup(response.text, 'lxml')
     title = soup.find('div', {'class': 'product_main'}).find('h1')  # récupère les titres des livres
     star = soup.find('p', {'class': 'star-rating'}).get('class')
@@ -53,10 +54,12 @@ def get_book_info(get_info):
     table = soup.find('table', {'class': 'table table-striped'})
     table_trs = table('tr')
     trs = []
-    for i, tr in enumerate(table_trs):
+    for tr in table_trs:
         trs.append(tr.text)
 
-    data.append(get_info)
+        print(tr.find('th').text)
+        tr.find('td')
+
     return {
         'product_page_url': url,
         'title': title,
@@ -67,20 +70,16 @@ def get_book_info(get_info):
     }
 
 
-get_books_urls(links)
 for url in get_books_urls():
 
     url = url.strip()
-    response = requests.get(url)
-    if response.ok:
-        get_book_info(data)
 
 
 csv_file = "product_information.csv"
 with open(csv_file, 'w', newline='') as csvfile:
-    writer = csv.DictWriter(csvfile, fieldnames=get_book_info(get_info))
+    writer = csv.DictWriter(csvfile, fieldnames=get_book_info(url))
     writer.writeheader()
-    for data in get_book_info(get_info):
+    for data in get_book_info(url):
         writer.writerow(data)
 
 
