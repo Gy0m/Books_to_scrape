@@ -1,80 +1,89 @@
 import requests
 from bs4 import BeautifulSoup
 import csv
-# links = []
-# for i in range(51):
-# url = 'http://books.toscrape.com/catalogue/page-' + str(i) + '.html'
-url = 'http://books.toscrape.com/index.html'
+import ipdb
 
-response = requests.get(url)
 
-if response.ok:
-    # print('Page: ' + str(i))
-    links = []
+def get_books_urls(get_urls):
+    # links = []
+    # for i in range(51):
+    # url = 'http://books.toscrape.com/catalogue/page-' + str(i) + '.html'
+    url = 'http://books.toscrape.com/index.html'
+
+    response = requests.get(url)
+    if response.ok:
+        # print('Page: ' + str(i))
+        links = []
+        soup = BeautifulSoup(response.text, 'lxml')
+        divs = soup.findAll('div', class_="image_container")
+        for div in divs:
+            a = div.find('a')
+            link = a['href']
+            links.append('http://books.toscrape.com/' + link)  # récupère les liens des images
+    print(links)  # compte le nombre de liens
+    return get_urls
+
+
+def to_integer(string_value):
+    integer_value = None
+    if string_value == 'One':
+        integer_value = '1'
+    if string_value == 'Two':
+        integer_value = '2'
+    if string_value == 'Tree':
+        integer_value = '3'
+    if string_value == 'Four':
+        integer_value = '4'
+    if string_value == 'Five':
+        integer_value = '5'
+    return integer_value
+
+
+def get_book_info(get_info):
+
+    data = list()
     soup = BeautifulSoup(response.text, 'lxml')
-    divs = soup.findAll('div', class_="image_container")
-    for div in divs:
-        a = div.find('a')
-        link = a['href']
-        links.append('http://books.toscrape.com/' + link)  # récupère les liens des images
-    print(len(links))  # compte le nombre de liens
+    title = soup.find('div', {'class': 'product_main'}).find('h1')  # récupère les titres des livres
+    star = soup.find('p', {'class': 'star-rating'}).get('class')
+    stars = to_integer(star[-1])
+    categorys = soup.find('ul', {'class': 'breadcrumb'}).find_all_next('a', limit=3)
+    category = categorys[-1]
+    image_url = soup.find('div', {'class': 'item'}).find('img').get('src')
+    product_description = soup.find('div', {'id': 'product_description'}).find_next('p')
+    table = soup.find('table', {'class': 'table table-striped'})
+    table_trs = table('tr')
+    trs = []
+    for i, tr in enumerate(table_trs):
+        trs.append(tr.text)
 
-with open('urls.csv', 'w') as file:
-    for link in links:
-        file.write(link + '\n')  # copie les liens dans un fichier csv et retour à la ligne
+    data.append(get_info)
+    return {
+        'product_page_url': url,
+        'title': title,
+        'stars': stars,
+        'category': category,
+        'image_url': image_url,
+        'product_description': product_description,
+    }
 
-with open('urls.csv', 'r') as file:
 
-    for url in file:
+get_books_urls(links)
+for url in get_books_urls():
 
-        url = url.strip()
-        response = requests.get(url)
-        if response.ok:
-            def scrape():
-                soup = BeautifulSoup(response.text, 'lxml')
-                title = soup.find('div', {'class': 'product_main'}).find('h1')  # récupère les titres des livres
-                star = soup.find('p', {'class': 'star-rating'}).get('class')
-                stars = star[-1]
-                categorys = soup.find('ul', {'class': 'breadcrumb'}).find_all_next('a', limit=3)
-                category = categorys[-1]
-                image_url = soup.find('div', {'class': 'item'}).find('img').get('src')
-                product_description = soup.find('div', {'id': 'product_description'}).find_next('p')
-                table = soup.find('table', {'class': 'table table-striped'})  # identifie la classe du tableau
-                table_ths = table('th')  # crée une variable avec les infos de th
-                table_tds = table.find_all('td')  # crée une variable avec les infos de td
+    url = url.strip()
+    response = requests.get(url)
+    if response.ok:
+        get_book_info(data)
 
-                def book_info(get_info):
-                    return {
-                        'universal_product_code (upc)': '[0], table_tds'
-                        ''
-                    }
 
-                ths = []
+csv_file = "product_information.csv"
+with open(csv_file, 'w', newline='') as csvfile:
+    writer = csv.DictWriter(csvfile, fieldnames=get_book_info(get_info))
+    writer.writeheader()
+    for data in get_book_info(get_info):
+        writer.writerow(data)
 
-                for i, th in enumerate(table_ths):  # itère les informations du tableau th
-                    ths.append(th.text)  # les ajoutes au dict ths
 
-                tds = []
-
-                for i, td in enumerate(table_tds):
-                    tds.append(td.text)
-
-                csv_columns = ['Titre', 'Intitulé', 'Informations', 'Stars', 'Category', 'Image', 'Product_description']
-                dict = [
-                    {
-                        'Titre': title.text, 'Intitulé': ths, 'Informations': tds, 'Stars': stars, 'Category': category.text,
-                        'Image': image_url, 'Product_description': product_description.text
-                    }
-                ]
-                # print(dict)
-                csv_file = "product_information.csv"
-                with open(csv_file, 'w', newline='') as csvfile:
-                    writer = csv.DictWriter(csvfile, fieldnames=csv_columns)
-                    writer.writeheader()
-                    for data in dict:
-                        writer.writerow(data)
-                print(table)
-print(scrape())
 # for category in categories:
 #     with open('product_information.csv', 'r') as books:  #ouvrir le fichier csv
 # for books in get_books(url_books):
