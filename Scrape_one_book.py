@@ -1,6 +1,7 @@
 import requests
 from bs4 import BeautifulSoup
 import csv
+import urllib3
 
 
 def get_books_urls():
@@ -42,7 +43,7 @@ def get_book_info(url):
     if not response.ok:
         return
 
-    soup = BeautifulSoup(response.text, 'lxml')
+    soup = BeautifulSoup(response.content, 'html.parser')
     title = soup.find('div', {'class': 'product_main'}).find('h1')  # récupère les titres des livres
     star = soup.find('p', {'class': 'star-rating'}).get('class')
     stars = to_integer(star[-1])
@@ -53,18 +54,17 @@ def get_book_info(url):
     table = soup.find('table', {'class': 'table table-striped'})
     table_trs = table.find_all('tr')
     trs = []
-    tds = []
     for tr in table_trs:
         trs.append(tr.text)
 
     data = {
         'product_page_url': url,
         'upc': trs[0],
-        'title': title,
+        'title': title.text,
         'price_including_tax': trs[3],
         'price_excluding_tax': trs[2],
         'number_available': trs[5],
-        'product_description': product_description,
+        'product_description': product_description.text,
         'category': category.text,
         'stars': stars,
         'image_url': image_url,
@@ -74,16 +74,15 @@ def get_book_info(url):
 
 
 csv_file = "product_information.csv"
-with open(csv_file, 'w', newline='') as csvfile:
+with open(csv_file, 'w') as csvfile:
     writer = csv.DictWriter(csvfile, fieldnames={
-        'product_page_url', 'title', 'price_including_tax', 'price_excluding_tax', 'number_available',
+        'product_page_url', 'title', 'upc', 'price_including_tax', 'price_excluding_tax', 'number_available',
         'product_description', 'category', 'stars', 'image_url',
     })
     writer.writeheader()
     for url in get_books_urls():
         url = url.strip()
-        for data in get_book_info(url):
-            writer.writerow(data)
+        writer.writerow(get_book_info(url))
 
 
 # for category in categories:
