@@ -78,7 +78,7 @@ with open(csv_file, 'w') as csvfile:
     writer = csv.DictWriter(csvfile, fieldnames=[
         'product_page_url', 'upc', 'title', 'price_including_tax', 'price_excluding_tax', 'number_available',
         'product_description', 'category', 'review_rating', 'image_url'
-   ])
+    ])
     writer.writeheader()
     for url in get_books_urls():
         url = url.strip()
