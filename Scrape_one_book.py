@@ -52,21 +52,21 @@ def get_book_info(url):
     image_url = soup.find('div', {'class': 'item'}).find('img').get('src')
     product_description = soup.find('div', {'id': 'product_description'}).find_next('p')
     table = soup.find('table', {'class': 'table table-striped'})
-    table_trs = table.find_all('tr')
-    trs = []
-    for tr in table_trs:
-        trs.append(tr.text)
+    table_tds = table.find_all('td')
+    tds = []
+    for td in table_tds:
+        tds.append(td.text)
 
     data = {
         'product_page_url': url,
-        'upc': trs[0],
+        'upc': tds[0],
         'title': title.text,
-        'price_including_tax': trs[3],
-        'price_excluding_tax': trs[2],
-        'number_available': trs[5],
+        'price_including_tax': tds[3],
+        'price_excluding_tax': tds[2],
+        'number_available': tds[5],
         'product_description': product_description.text,
         'category': category.text,
-        'stars': stars,
+        'review_rating': stars,
         'image_url': image_url,
     }
     print(data)
@@ -75,10 +75,10 @@ def get_book_info(url):
 
 csv_file = "product_information.csv"
 with open(csv_file, 'w') as csvfile:
-    writer = csv.DictWriter(csvfile, fieldnames={
-        'product_page_url', 'title', 'upc', 'price_including_tax', 'price_excluding_tax', 'number_available',
-        'product_description', 'category', 'stars', 'image_url',
-    })
+    writer = csv.DictWriter(csvfile, fieldnames=[
+        'product_page_url', 'upc', 'title', 'price_including_tax', 'price_excluding_tax', 'number_available',
+        'product_description', 'category', 'review_rating', 'image_url'
+   ])
     writer.writeheader()
     for url in get_books_urls():
         url = url.strip()
