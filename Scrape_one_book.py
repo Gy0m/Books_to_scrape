@@ -19,7 +19,6 @@ def get_books_urls():
             a = div.find('a')
             link = a['href']
             links.append('http://books.toscrape.com/' + link)  # récupère les liens des images
-    print(links)  # compte le nombre de liens
     return links
 
 
@@ -29,7 +28,7 @@ def to_integer(string_value):
         integer_value = '1'
     if string_value == 'Two':
         integer_value = '2'
-    if string_value == 'Tree':
+    if string_value == 'Three':
         integer_value = '3'
     if string_value == 'Four':
         integer_value = '4'
@@ -52,35 +51,39 @@ def get_book_info(url):
     image_url = soup.find('div', {'class': 'item'}).find('img').get('src')
     product_description = soup.find('div', {'id': 'product_description'}).find_next('p')
     table = soup.find('table', {'class': 'table table-striped'})
-    table_trs = table('tr')
+    table_trs = table.find_all('tr')
     trs = []
+    tds = []
     for tr in table_trs:
         trs.append(tr.text)
 
-        print(tr.find('th').text)
-        tr.find('td')
-
-    return {
+    data = {
         'product_page_url': url,
+        'upc': trs[0],
         'title': title,
-        'stars': stars,
-        'category': category,
-        'image_url': image_url,
+        'price_including_tax': trs[3],
+        'price_excluding_tax': trs[2],
+        'number_available': trs[5],
         'product_description': product_description,
+        'category': category.text,
+        'stars': stars,
+        'image_url': image_url,
     }
-
-
-for url in get_books_urls():
-
-    url = url.strip()
+    print(data)
+    return data
 
 
 csv_file = "product_information.csv"
 with open(csv_file, 'w', newline='') as csvfile:
-    writer = csv.DictWriter(csvfile, fieldnames=get_book_info(url))
+    writer = csv.DictWriter(csvfile, fieldnames={
+        'product_page_url', 'title', 'price_including_tax', 'price_excluding_tax', 'number_available',
+        'product_description', 'category', 'stars', 'image_url',
+    })
     writer.writeheader()
-    for data in get_book_info(url):
-        writer.writerow(data)
+    for url in get_books_urls():
+        url = url.strip()
+        for data in get_book_info(url):
+            writer.writerow(data)
 
 
 # for category in categories:
