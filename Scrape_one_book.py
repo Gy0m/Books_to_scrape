@@ -84,6 +84,7 @@ with open(csv_file, 'w') as csvfile:
         url = url.strip()
         writer.writerow(get_book_info(url))
 
+
 # for category in categories:
 #     with open('product_information.csv', 'r') as books:  #ouvrir le fichier csv
 # for books in get_books(url_books):
