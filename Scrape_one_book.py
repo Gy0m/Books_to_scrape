@@ -101,6 +101,7 @@ def download_image():
     response = requests.get()
 
 
+
 # for category in categories:
 #     with open('product_information.csv', 'r') as books:  #ouvrir le fichier csv
 # for books in get_books(url_books):
