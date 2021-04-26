@@ -63,7 +63,7 @@ def get_book_info(url):
 
     clean_number_available = re.findall(r'\d+', tds[5])
 
-    f = open(tds[0], 'wb')
+    f = open(tds[0] + '.jpg', 'wb')
     response = requests.get(clean_image_url)
     f.write(response.content)
     f.close()
