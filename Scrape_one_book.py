@@ -1,25 +1,25 @@
 import requests
 from bs4 import BeautifulSoup
 import csv
-import urllib3
+import re
 
 
 def get_books_urls():
     links = []
-    # for i in range(51):
-    # url = 'http://books.toscrape.com/catalogue/page-' + str(i) + '.html'
-    url = 'http://books.toscrape.com/index.html'
+    for i in range(51):
+        url = 'http://books.toscrape.com/catalogue/page-' + str(i) + '.html'
+    # url = 'http://books.toscrape.com/index.html'
 
     response = requests.get(url)
     if response.ok:
-        # print('Page: ' + str(i))
-        # links = []
+        print('Page: ' + str(i))
         soup = BeautifulSoup(response.text, 'lxml')
         divs = soup.findAll('div', class_="image_container")
         for div in divs:
             a = div.find('a')
             link = a['href']
-            links.append('http://books.toscrape.com/' + link)  # récupère les liens des images
+            # print(link)
+            links.append('http://books.toscrape.com/catalogue/' + link)  # récupère les liens des images
     return links
 
 
@@ -50,12 +50,23 @@ def get_book_info(url):
     categorys = soup.find('ul', {'class': 'breadcrumb'}).find_all_next('a', limit=3)
     category = categorys[-1]
     image_url = soup.find('div', {'class': 'item'}).find('img').get('src')
-    product_description = soup.find('div', {'id': 'product_description'}).find_next('p')
+    clean_image_url = image_url.replace('../..', 'http://books.toscrape.com')
+    description = soup.find('div', id='product_description')
+    product_description = ''
+    if description:
+        product_description = description.find_next('p').text
     table = soup.find('table', {'class': 'table table-striped'})
     table_tds = table.find_all('td')
     tds = []
     for td in table_tds:
         tds.append(td.text)
+
+    clean_number_available = re.findall(r'\d+', tds[5])
+
+    f = open(tds[0], 'wb')
+    response = requests.get(clean_image_url)
+    f.write(response.content)
+    f.close()
 
     data = {
         'product_page_url': url,
@@ -63,11 +74,11 @@ def get_book_info(url):
         'title': title.text,
         'price_including_tax': tds[3],
         'price_excluding_tax': tds[2],
-        'number_available': tds[5],
-        'product_description': product_description.text,
+        'number_available': clean_number_available[0],
+        'product_description': product_description,
         'category': category.text,
         'review_rating': stars,
-        'image_url': image_url,
+        'image_url': clean_image_url,
     }
     print(data)
     return data
@@ -83,6 +94,12 @@ with open(csv_file, 'w') as csvfile:
     for url in get_books_urls():
         url = url.strip()
         writer.writerow(get_book_info(url))
+
+
+def download_image():
+    f = open('image', 'wb')
+    response = requests.get()
+
 
 # for category in categories:
 #     with open('product_information.csv', 'r') as books:  #ouvrir le fichier csv
