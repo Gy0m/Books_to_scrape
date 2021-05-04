@@ -2,24 +2,23 @@ import requests
 from bs4 import BeautifulSoup
 import csv
 import re
+import os
 
 
 def get_books_urls():
     links = []
-    for i in range(51):
+    for i in range(4):
         url = 'http://books.toscrape.com/catalogue/page-' + str(i) + '.html'
-    # url = 'http://books.toscrape.com/index.html'
 
-    response = requests.get(url)
-    if response.ok:
-        print('Page: ' + str(i))
-        soup = BeautifulSoup(response.text, 'lxml')
-        divs = soup.findAll('div', class_="image_container")
-        for div in divs:
-            a = div.find('a')
-            link = a['href']
-            # print(link)
-            links.append('http://books.toscrape.com/catalogue/' + link)  # récupère les liens des images
+        response = requests.get(url)
+        if response.ok:
+            print('Page: ' + str(i))
+            soup = BeautifulSoup(response.text, 'lxml')
+            divs = soup.findAll('div', class_="image_container")
+            for div in divs:
+                a = div.find('a')
+                link = a['href']
+                links.append('http://books.toscrape.com/catalogue/' + link)  # récupère les liens des images
     return links
 
 
@@ -84,25 +83,21 @@ def get_book_info(url):
     return data
 
 
-csv_file = "product_information.csv"
-with open(csv_file, 'w') as csvfile:
-    writer = csv.DictWriter(csvfile, fieldnames=[
-        'product_page_url', 'upc', 'title', 'price_including_tax', 'price_excluding_tax', 'number_available',
-        'product_description', 'category', 'review_rating', 'image_url'
-    ])
-    writer.writeheader()
-    for url in get_books_urls():
-        url = url.strip()
-        writer.writerow(get_book_info(url))
+for url in get_books_urls():
+    book = get_book_info(url)
+    if not os.path.exists('csv'):
+        os.makedirs('csv')
+    filename = 'csv/' + book['category'] + '.csv'
+    if os.path.exists(filename):
+        writeheader = False
+    else:
+        writeheader = True
+    with open(filename, 'a+') as csvfile:
+        writer = csv.DictWriter(csvfile, fieldnames=[
+            'product_page_url', 'upc', 'title', 'price_including_tax', 'price_excluding_tax', 'number_available',
+            'product_description', 'category', 'review_rating', 'image_url'
+        ])
 
-
-def download_image():
-    f = open('image', 'wb')
-    response = requests.get()
-
-
-
-# for category in categories:
-#     with open('product_information.csv', 'r') as books:  #ouvrir le fichier csv
-# for books in get_books(url_books):
-#  #ecrire dans le csv
+        if writeheader:
+            writer.writeheader()
+        writer.writerow(book)
