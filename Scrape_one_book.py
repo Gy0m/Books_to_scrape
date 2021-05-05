@@ -64,6 +64,8 @@ def get_book_info(url):
 
     f = open(tds[0] + '.jpg', 'wb')
     response = requests.get(clean_image_url)
+    if not os.path.exists('covers'):
+        os.makedirs('covers')
     f.write(response.content)
     f.close()
 

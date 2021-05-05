@@ -1,5 +1,6 @@
 env/
 csv/
+covers/
 .idea
 *.csv
 *.jpg
