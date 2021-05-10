@@ -7,7 +7,7 @@ import os
 
 def get_books_urls():
     links = []
-    for i in range(4):
+    for i in range(51):
         url = 'http://books.toscrape.com/catalogue/page-' + str(i) + '.html'
 
         response = requests.get(url)
@@ -62,10 +62,10 @@ def get_book_info(url):
 
     clean_number_available = re.findall(r'\d+', tds[5])
 
-    f = open(tds[0] + '.jpg', 'wb')
-    response = requests.get(clean_image_url)
     if not os.path.exists('covers'):
         os.makedirs('covers')
+    f = open('covers/' + tds[0] + '.jpg', 'wb')
+    response = requests.get(clean_image_url)
     f.write(response.content)
     f.close()
 
