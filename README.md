@@ -1,4 +1,4 @@
-# Books_to_scrap
+# Books_to_scrape
 
 A little script to scrape information about books in the website [Books To Scrape](http://books.toscrape.com/index.html)
 
@@ -14,10 +14,10 @@ Then :
 ```
 pip install -r requirements.txt
 ```
-Then enter that command in the terminal :
+Then enter this command in the terminal :
 
 ```
-python3 Scrape_one_book.py  
+python3 scrape_books.py  
 ```
 
 And that's it :)
