@@ -7,10 +7,14 @@ import os
 
 def get_books_urls():
     links = []
-    for i in range(51):
-        url = 'http://books.toscrape.com/catalogue/page-' + str(i) + '.html'
+    url = "http://books.toscrape.com"
+    response = requests.get(url)
+    soup = BeautifulSoup(response.text, 'html.parser')
+    total_pages = int(soup.find('li', {'class': 'current'}).string.strip()[-2:])+1
+    for i in range(1, total_pages):
+        urls = 'http://books.toscrape.com/catalogue/page-' + str(i) + '.html'
 
-        response = requests.get(url)
+        response = requests.get(urls)
         if response.ok:
             print('Page: ' + str(i))
             soup = BeautifulSoup(response.text, 'lxml')
@@ -19,6 +23,7 @@ def get_books_urls():
                 a = div.find('a')
                 link = a['href']
                 links.append('http://books.toscrape.com/catalogue/' + link)  # récupère les liens des images
+
     return links
 
 
@@ -37,8 +42,8 @@ def to_integer(string_value):
     return integer_value
 
 
-def get_book_info(url):
-    response = requests.get(url)
+def get_book_info(urls):
+    response = requests.get(urls)
     if not response.ok:
         return
 
@@ -70,7 +75,7 @@ def get_book_info(url):
     f.close()
 
     data = {
-        'product_page_url': url,
+        'product_page_url': urls,
         'upc': tds[0],
         'title': title.text,
         'price_including_tax': tds[3],
@@ -85,8 +90,8 @@ def get_book_info(url):
     return data
 
 
-for url in get_books_urls():
-    book = get_book_info(url)
+for urls in get_books_urls():
+    book = get_book_info(urls)
     if not os.path.exists('csv'):
         os.makedirs('csv')
     filename = 'csv/' + book['category'] + '.csv'
