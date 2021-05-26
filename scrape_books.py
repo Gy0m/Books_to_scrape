@@ -49,6 +49,7 @@ def get_book_info(urls):
 
     soup = BeautifulSoup(response.content, 'html.parser')
     title = soup.find('div', {'class': 'product_main'}).find('h1')  # récupère les titres des livres
+    clean_title = re.sub(r'/', ' ', title.text)
     star = soup.find('p', {'class': 'star-rating'}).get('class')
     stars = to_integer(star[-1])
     categorys = soup.find('ul', {'class': 'breadcrumb'}).find_all_next('a', limit=3)
@@ -69,7 +70,7 @@ def get_book_info(urls):
 
     if not os.path.exists('covers'):
         os.makedirs('covers')
-    f = open('covers/' + tds[0] + '.jpg', 'wb')
+    f = open('covers/' + clean_title + '.jpg', 'wb')
     response = requests.get(clean_image_url)
     f.write(response.content)
     f.close()
