@@ -7,7 +7,7 @@ A little script to scrape information about books in the website [Books To Scrap
 Clone the repo and :
 
 ```
-cd Books-to-scrape 
+cd Books_to_scrape 
 ```
 Then :
 
